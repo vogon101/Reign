@@ -1,3 +1,4 @@
+package com.vogon101.game.platform.reign;
 
 public class BouncePlatform extends Platform {
 

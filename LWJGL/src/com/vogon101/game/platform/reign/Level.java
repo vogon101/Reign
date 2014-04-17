@@ -1,3 +1,4 @@
+package com.vogon101.game.platform.reign;
 import java.util.ArrayList;
 import java.util.Random;
 

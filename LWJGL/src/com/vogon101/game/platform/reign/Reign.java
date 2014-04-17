@@ -1,3 +1,4 @@
+package com.vogon101.game.platform.reign;
 import java.awt.Font;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

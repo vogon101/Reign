@@ -1,3 +1,4 @@
+package com.vogon101.game.platform.reign;
 import static  org.lwjgl.opengl.GL11.*;
 
 import java.io.File;
@@ -14,7 +15,7 @@ public class Player {
 	
 	private double x, y, xSpeed, ySpeed, floor, runtime_fwd, runtime_bk;
 	private int jumptimer, score = 0, mobkills = 0, deaths = 0;
-	private boolean jump,newFloor, alive = true;
+	private boolean jump, alive = true;
 	public boolean win;
 	
 	private static Texture texture;
@@ -23,7 +24,6 @@ public class Player {
 		x= 100;
 		y= 38;
 		floor = 37;
-		newFloor = false;
 		win = false;
 		runtime_fwd = 1000;
 		runtime_bk = -1000;
@@ -59,12 +59,10 @@ public class Player {
 								a.startCountdown(true);
 								floor = a.getTopEdge();
 								plat.isFloor = true;
-								newFloor = true;
 							}
 							else {
 								floor = a.getTopEdge();
 								plat.isFloor = true;
-								newFloor = true;
 							}
 						}
 						else {
@@ -72,7 +70,6 @@ public class Player {
 							jump = false;
 							jumptimer = 0;
 							plat.isFloor = false;
-							newFloor = false;
 							
 						}
 					}
@@ -81,7 +78,6 @@ public class Player {
 						floor = plat.getTopEdge();
 						//tracking booleans
 						plat.isFloor = true;
-						newFloor = true;
 						jump = true;
 						jumptimer = 0;
 					}
@@ -90,14 +86,12 @@ public class Player {
 						floor = plat.getTopEdge();
 						//tracking booleans
 						plat.isFloor = true;
-						newFloor = true;
 					}
 				}
 			}
 			else if ((x < plat.getLeftEdge() || x > plat.getRightEdge()) && plat.isFloor){
 				floor = 37;
 				plat.isFloor = false;
-				newFloor = false;
 			}
 		}
 		
@@ -124,7 +118,6 @@ public class Player {
 					}
 				}
 				else {
-					Spikes mob2 = (Spikes) mob;
 					if (x>mob.getLeftEdge() && x < mob.getRightEdge()) {
 						if (y<mob.getTopEdge()+5 && y> mob.getBottomEdge()-5) {
 							
