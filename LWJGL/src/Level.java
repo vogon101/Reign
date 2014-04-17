@@ -11,14 +11,22 @@ public class Level {
 	public Level () {
 		Random rand = new Random();
 		Platform plat3;
-		Platform plat = new Platform(sRi(240, 300, rand), sRi(65, 75, rand), 100, 16);
+		Spikes spike, spike1;
+		spike = new Spikes(200, 36, 0, 0);
+		mobs.add(spike);
+		Platform plat = new Platform(sRi(240, 300, rand), sRi(90, 120, rand), 100, 16);
 		Platform plat2 = new Platform(sRi(430, 450, rand), sRi(160, 170, rand), 100, 16);
 		if (Reign.levelNum < 2) {
 			plat3 = new Platform(sRi(580, 620, rand), sRi(245, 255, rand), 100, 16);
 		}
 		else if (Reign.levelNum < 4){
-			plat3 = new DissapearingPlatform(sRi(580, 620, rand), sRi(245, 255, rand), 100, 16);
+			int x, y;
+			x = sRi(580, 620, rand);
+			y = sRi(245, 255, rand);
+			plat3 = new DissapearingPlatform(x, y, 100, 16);
 			((DissapearingPlatform) plat3).isCounting = false;
+			spike1 = new Spikes(x, 36, 0, 0);
+			mobs.add(spike1);
 		}
 		else {
 			plat3 = new BouncePlatform(sRi(580, 620, rand), sRi(245, 255, rand), 100, 16);
@@ -33,10 +41,16 @@ public class Level {
 		
 		platforms.add(gp);
 		
-		for (int i = 0; i< Reign.levelNum; i++) {
-			double a=  1.0 + (6.5-1.0) * rand.nextDouble();
-			System.out.println(a);
-			mobs.add(new Mob(sRi(150,500, rand), 38, a,  0));
+		int a;
+		if (Reign.levelNum > 6) {
+			a = 6;
+		}
+		else {
+			a = Reign.levelNum;
+		}
+		for (int i = 0; i< a; i++) {
+			double b1=  1.0 + (6.5-1.0) * rand.nextDouble();
+			mobs.add(new Mob(sRi(150,500, rand), 37, b1,  0));
 		}
 	}
 	

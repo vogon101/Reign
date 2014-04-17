@@ -13,8 +13,8 @@ import org.newdawn.slick.opengl.TextureLoader;
 public class Player {
 	
 	private double x, y, xSpeed, ySpeed, floor, runtime_fwd, runtime_bk;
-	private int jumptimer;
-	private boolean jump,newFloor;
+	private int jumptimer, score = 0, mobkills = 0, deaths = 0;
+	private boolean jump,newFloor, alive = true;
 	public boolean win;
 	
 	private static Texture texture;
@@ -31,13 +31,14 @@ public class Player {
 	
 	public void logic() {
 
+		
 		//Move Player
 		x += xSpeed;
 		y += ySpeed;
 		
 		//Get all the platforms in the level
 		ArrayList<Platform> plats = Reign.getPlatforms();
-		//Colision Code
+		//Colision Code for platforms
 		for (Platform plat : plats) {
 			//if inside horizontal area of platform
 			if (x > plat.getLeftEdge() && x < plat.getRightEdge()){
@@ -47,6 +48,7 @@ public class Player {
 					//if level done
 					if (plat.getClass() == GoalPlatform.class) {
 						win = true;
+						score++;
 					}
 					
 					//if you're on a disappearing platform
@@ -99,7 +101,52 @@ public class Player {
 			}
 		}
 		
-
+		//get all mobs in level
+		ArrayList<Mob> mobs = Reign.getMobs();
+		//collision code for mobs
+		for (Mob mob : mobs) {
+			if (mob.isAlive()) {
+				if (mob.getClass() != Spikes.class) {
+					if (x>mob.getLeftEdge() && x < mob.getRightEdge()) {
+						if (y<mob.getTopEdge()/2 && y> mob.getBottomEdge()-5) {
+							//die
+							alive = false;
+							if (score > 0)
+								score--;
+							deaths ++;
+						}
+						else if (y<mob.getTopEdge()+5&&y>mob.getTopEdge()-5) {
+							//kill mob
+							mob.kill();
+							score++;
+							mobkills++;
+						}
+					}
+				}
+				else {
+					Spikes mob2 = (Spikes) mob;
+					if (x>mob.getLeftEdge() && x < mob.getRightEdge()) {
+						if (y<mob.getTopEdge()+5 && y> mob.getBottomEdge()-5) {
+							
+							//die
+							alive = false;
+							deaths++;
+							if (score > 0)
+								score--;
+						}
+					}
+					
+				}
+			}
+		}
+		
+		
+		Reign.drawString("SCORE   " + String.valueOf(score), 50, 700);
+		Reign.drawString("LEVEL   " + String.valueOf(Reign.levelNum), 50, 685);
+		Reign.drawString("DEATHS  " + String.valueOf(deaths), 50, 670);
+		Reign.drawString("KILLS   " + String.valueOf(mobkills), 50, 655);
+		
+		
 		if (!jump) {
 			if (y > floor) {
 				ySpeed = -1;
@@ -152,8 +199,18 @@ public class Player {
 			runtime_bk  = -1000;
 		}
 		
+		if (!alive) {
+			x = 100; y= 38;
+			alive = true;
+			jump = true;
+;			jumptimer = 0;
+			
+		}
 		
 	}
+		
+		
+
 	
 	public void update() {
 		

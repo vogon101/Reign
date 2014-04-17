@@ -1,13 +1,18 @@
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.*; 
 
 
 public class Mob {
 
-	private double x = 500, y = 38, xSpeed = 0, ySpeed = 0, xSave =0, ySave = 0;
+	protected double x = 500, y = 38, xSpeed = 0, ySpeed = 0, xSave =0, ySave = 0;
+	protected double height = 64;
+	protected double width = 64;
+	private boolean alive = true;
 	
 	public void update() {
-		logic();
-		draw();
+		if (alive) {
+			logic();
+			draw();
+		}
 	}
 	
 	public Mob(double x_, double y_, double xSpeed_, double ySpeed_) {
@@ -31,23 +36,54 @@ public class Mob {
 		
 	}
 	
+	public void kill() {
+		alive = false;
+	}
+	
+	
 	public void draw() {
 		glPushMatrix();
 		glTranslated(x, y, 0);
 		
 		
-		int sm = 2;
+
+		/*
+		 * For a quad the coords are:
+		 * vertex 1 = 0, 0
+		 * vertex 2 = width, 0
+		 * vertex 3 = width, height
+		 * vertex 4 = 0, height
+		 */
+				
 		glBegin(GL_QUADS);
 		{
 			glColor3d(1, 0, 0);
-			glVertex2d(-8*sm, 0*sm);
-			glVertex2d(8*sm, 0*sm);
-			glVertex2d(8*sm, 16*sm);
-			glVertex2d(-8*sm, 16*sm);
+			glVertex2d(0, 0);
+			glVertex2d(width, 0);
+			glVertex2d(width, height);
+			glVertex2d(0, height);
 		}
 		glEnd();
 		glPopMatrix();
 		
 	}
+	
+	public double getTopEdge() {
+		return y+height;
+	}
+	
+	public double getLeftEdge() {
+		return x;
+	}
+	
+	public double getRightEdge() {
+		return x+width;
+	}
+	
+	public double getBottomEdge(){
+		return y;
+	}
+	
+	public boolean isAlive() {return alive;}
 	
 }
