@@ -50,6 +50,7 @@ public class GoalPlatform extends Platform {
 		
 		glEnable(GL_TEXTURE_2D);
 		
+		glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 		try {
 			texture = TextureLoader.getTexture("PNG", new FileInputStream(new File("res/door.png")));
@@ -85,6 +86,7 @@ public class GoalPlatform extends Platform {
 			System.exit(0);
 		}
 		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
 		glPopMatrix();
 	}
 

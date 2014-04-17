@@ -9,10 +9,20 @@ public class Level {
 	
 	public Level () {
 		Random rand = new Random();
-		
+		Platform plat3;
 		Platform plat = new Platform(sRi(240, 300, rand), sRi(65, 75, rand), 100, 16);
 		Platform plat2 = new Platform(sRi(430, 450, rand), sRi(160, 170, rand), 100, 16);
-		Platform plat3 = new Platform(sRi(580, 620, rand), sRi(245, 255, rand), 100, 16);
+		if (Reign.levelNum < 2) {
+			plat3 = new Platform(sRi(580, 620, rand), sRi(245, 255, rand), 100, 16);
+		}
+		else if (Reign.levelNum < 4){
+			plat3 = new DissapearingPlatform(sRi(580, 620, rand), sRi(245, 255, rand), 100, 16);
+			((DissapearingPlatform) plat3).isCounting = false;
+		}
+		else {
+			plat3 = new BouncePlatform(sRi(580, 620, rand), sRi(245, 255, rand), 100, 16);
+			plat3.setColor(0d, 0d, 1d);
+		}
 		Platform plat4 = new Platform(sRi(730, 770, rand), sRi(345, 355, rand), 100, 16);
 		platforms.add(plat);platforms.add(plat2);platforms.add(plat3);platforms.add(plat4);
 		

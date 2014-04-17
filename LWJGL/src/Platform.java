@@ -44,7 +44,7 @@ public class Platform {
 		glPopMatrix();
 	}
 	
-	public int gettopEdge() {
+	public int getTopEdge() {
 		return y+height;
 	}
 	

@@ -1,9 +1,14 @@
 import static  org.lwjgl.opengl.GL11.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
 
 public class Player {
 	
@@ -20,26 +25,74 @@ public class Player {
 		floor = 37;
 		newFloor = false;
 		win = false;
-		runtime_fwd = 0;
-		runtime_bk = 0;
+		runtime_fwd = 1000;
+		runtime_bk = -1000;
 	}
 	
 	public void logic() {
 
+		//Move Player
 		x += xSpeed;
 		y += ySpeed;
 		
-		
+		//Get all the platforms in the level
 		ArrayList<Platform> plats = Reign.getPlatforms();
-		
+		//Colision Code
 		for (Platform plat : plats) {
+			//if inside horizontal area of platform
 			if (x > plat.getLeftEdge() && x < plat.getRightEdge()){
-				if (y == plat.gettopEdge() || y == plat.gettopEdge()+1) {
-					floor = plat.gettopEdge();
-					plat.isFloor = true;
-					newFloor = true;
+				//if above top of platform
+				if (y > plat.getTopEdge()-4 && y < plat.getTopEdge()+4) {
+					
+					//if level done
 					if (plat.getClass() == GoalPlatform.class) {
 						win = true;
+					}
+					
+					//if you're on a disappearing platform
+					else if (plat.getClass() == DissapearingPlatform.class) {
+						System.out.println("DISSAPPEARING PLATFORM");
+						DissapearingPlatform a = (DissapearingPlatform) plat;
+						if (a.isThere) {
+							if (!a.isCounting) {
+								System.out.println("THERE");
+								a.startCountdown(true);
+								floor = a.getTopEdge();
+								plat.isFloor = true;
+								newFloor = true;
+							}
+							else {
+								System.out.println(a.isCounting);
+								floor = a.getTopEdge();
+								plat.isFloor = true;
+								newFloor = true;
+							}
+						}
+						else {
+							floor = 37;
+							jump = false;
+							jumptimer = 0;
+							plat.isFloor = false;
+							newFloor = false;
+							System.out.println("NOT THERE");
+							
+						}
+					}
+					else if (plat.getClass() == BouncePlatform.class) {
+						//set the floor level for gravity
+						floor = plat.getTopEdge();
+						//tracking booleans
+						plat.isFloor = true;
+						newFloor = true;
+						jump = true;
+						jumptimer = 0;
+					}
+					else {
+						//set the floor level for gravity
+						floor = plat.getTopEdge();
+						//tracking booleans
+						plat.isFloor = true;
+						newFloor = true;
 					}
 				}
 			}
@@ -50,7 +103,7 @@ public class Player {
 			}
 		}
 		
-		
+
 		if (!jump) {
 			if (y > floor) {
 				ySpeed = -1;
@@ -84,45 +137,23 @@ public class Player {
 		
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			if (runtime_fwd > 50) {
-				xSpeed = 2;
+			if (xSpeed < 3) {
+				xSpeed +=runtime_fwd/1000;
 			}
-			else if (runtime_fwd > 150) {
-				xSpeed = 3;
-			}
-			else if (runtime_fwd > 250) {
-				xSpeed = 4;
-			}
-			else if (runtime_fwd > 350) {
-				xSpeed = 5;
-			}
-			else {
-				xSpeed = 1;
-			}
+			runtime_bk = -1000;
 			runtime_fwd += 2;
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			if (runtime_bk > 50) {
-				xSpeed = -2;
+			if (xSpeed > -3) {
+				xSpeed +=runtime_bk/1000;
 			}
-			else if (runtime_bk > 150) {
-				xSpeed = -3;
-			}
-			else if (runtime_bk > 250) {
-				xSpeed = -4;
-			}
-			else if (runtime_bk > 350) {
-				xSpeed = -5;
-			}
-			else {
-				xSpeed = -1;
-			}
-			runtime_bk += 2;
+			runtime_bk +=2;
+			runtime_fwd =1000 ;
 		}
 		else {
 			xSpeed = 0;
-			runtime_fwd = 0;
-			runtime_bk  = 0;
+			runtime_fwd = 1000;
+			runtime_bk  = -1000;
 		}
 		
 		
@@ -139,22 +170,46 @@ public class Player {
 		
 		glPushMatrix();
 		glTranslated(x, y, 0);
-		{
-			glBegin(GL_QUADS);
-			glColor3d(1, 0, 0);
-			glVertex2d(-8, 0);
-			
-			glColor3d(0, 1, 0);
-			glVertex2d(8, 0);
-			
-			glColor3d(0, 0, 1);
-			glVertex2d(8, 16);
-			
-			glColor3d(1, 1, 0.01);
-			glVertex2d(-8, 16);
-			
-			glEnd();
+		
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
+		try {
+			texture = TextureLoader.getTexture("PNG", new FileInputStream(new File("res/char.png")));
+		        // Replace PNG with your file extension
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
+		
+		int sm = 4;
+		
+		if (texture != null) {
+			
+			glBegin(GL_QUADS);
+			texture.bind();
+			{
+				
+				glTexCoord2f(1,1);
+				glVertex2d(-8*sm, 0*sm);
+				glTexCoord2f(0,1);
+				glVertex2d(8*sm, 0*sm);
+				glTexCoord2f(0,0);
+				glVertex2d(8*sm, 16*sm);
+				glTexCoord2f(1,0);
+				glVertex2d(-8*sm, 16*sm);
+			}
+			texture.release();
+			glEnd();
+			
+		}
+		else {
+			System.out.println("FATAL EXCEPTION: TEXTURE FAILED TO LOAD");
+			System.exit(0);
+		}
+		glDisable(GL_TEXTURE_2D);
 		
 		glPopMatrix();
 	}
@@ -168,87 +223,10 @@ public class Player {
 	
 	
 	
-}
-
-
-/*
-glColor4f(1.0f,1.0f,1.0f,1.0f);
-glEnable (GL_BLEND);
-
-glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-glEnable(GL_TEXTURE_2D);
-
-try {
-	texture = TextureLoader.getTexture("PNG", new FileInputStream(new File("res/char.png")));
-        // Replace PNG with your file extension
-} catch (FileNotFoundException e) {
-	e.printStackTrace();
-} catch (IOException e) {
-	e.printStackTrace();
-	System.exit(1);
-}
-
-int sm = 4;
-
-
-if (texture != null) {
 	
-	glBegin(GL_QUADS);
-	texture.bind();
-	{
-		
-		glTexCoord2f(1,1);
-		glVertex2d(-8*sm, 0*sm);
-		glTexCoord2f(0,1);
-		glVertex2d(8*sm, 0*sm);
-		glTexCoord2f(0,0);
-		glVertex2d(8*sm, 16*sm);
-		glTexCoord2f(1,0);
-		glVertex2d(-8*sm, 16*sm);
-	}
-	texture.release();
-	glEnd();
-	glDisable (GL_BLEND);
-}
-else {
-	System.out.println("FATAL EXCEPTION: TEXTURE FAILED TO LOAD");
-	System.exit(0);
-}
-glDisable(GL_TEXTURE_2D);
-
-*/
-/*
-glColor4f(1.0f,1.0f,1.0f,1.0f);
-glEnable (GL_BLEND);
-glPushMatrix();
-glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glTranslated(x, y, 0);
-glEnable(GL_TEXTURE_2D);
-		
-TextureLoaderCustom tl  = new TextureLoaderCustom();
-try {
-	tl.getTexture("res/char.png");
-} catch (IOException e) {
-	e.printStackTrace();
-	System.exit(0);
+	//TODO: enemies
+	//TODO: spikes
+	//TODO: death
+	//TODO: score
 }
 
-int sm = 4;
-
-glBegin(GL_QUADS);
-texture.bind();
-{
-	
-	glTexCoord2f(1,1);
-	glVertex2d(-8*sm, 0*sm);
-	glTexCoord2f(0,1);
-	glVertex2d(8*sm, 0*sm);
-	glTexCoord2f(0,0);
-	glVertex2d(8*sm, 16*sm);
-	glTexCoord2f(1,0);
-	glVertex2d(-8*sm, 16*sm);
-}
-glEnd();
-glDisable (GL_BLEND);
-*/
