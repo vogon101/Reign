@@ -51,18 +51,15 @@ public class Player {
 					
 					//if you're on a disappearing platform
 					else if (plat.getClass() == DissapearingPlatform.class) {
-						System.out.println("DISSAPPEARING PLATFORM");
 						DissapearingPlatform a = (DissapearingPlatform) plat;
 						if (a.isThere) {
 							if (!a.isCounting) {
-								System.out.println("THERE");
 								a.startCountdown(true);
 								floor = a.getTopEdge();
 								plat.isFloor = true;
 								newFloor = true;
 							}
 							else {
-								System.out.println(a.isCounting);
 								floor = a.getTopEdge();
 								plat.isFloor = true;
 								newFloor = true;
@@ -74,7 +71,6 @@ public class Player {
 							jumptimer = 0;
 							plat.isFloor = false;
 							newFloor = false;
-							System.out.println("NOT THERE");
 							
 						}
 					}

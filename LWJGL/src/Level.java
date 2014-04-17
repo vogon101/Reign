@@ -5,6 +5,7 @@ import java.util.Random;
 public class Level {
 
 	private ArrayList<Platform> platforms = new ArrayList<Platform>();
+	private ArrayList<Mob> mobs = new ArrayList<Mob>();
 	private GoalPlatform gp;
 	
 	public Level () {
@@ -31,10 +32,20 @@ public class Level {
 		gp.setColor(r,g,b);
 		
 		platforms.add(gp);
+		
+		for (int i = 0; i< Reign.levelNum; i++) {
+			double a=  1.0 + (6.5-1.0) * rand.nextDouble();
+			System.out.println(a);
+			mobs.add(new Mob(sRi(150,500, rand), 38, a,  0));
+		}
 	}
 	
 	public ArrayList<Platform> getPlatforms() {
 		return platforms;
+	}
+	
+	public ArrayList<Mob> getMobs() {
+		return mobs;
 	}
 	
 	public GoalPlatform getGP() {

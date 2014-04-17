@@ -16,7 +16,7 @@ public class Reign {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	private static Level level = new Level();
-	public static int levelNum = 1;
+	public static int levelNum = 0;
 
 	private static int fontTexture;
 
@@ -24,10 +24,9 @@ public class Reign {
 		// Set screen size
 		Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 		Display.create();
-		Display.setTitle("Reign - The Platform Game | Pre Alpha 1.0.1 (DEV 2a)");
+		Display.setTitle("Reign - The Platform Game | Pre Alpha 1.0.1 (DEV 3a)");
 		// Player instance
 		player = new Player();
-		final Mob mob = new Mob();
 		init();
 
 		// Mainloop
@@ -39,10 +38,13 @@ public class Reign {
 			drawBG();
 			// update and draw the player
 			player.update();
-			mob.update();
 			// Draw Platforms
 			for (final Platform platform : level.getPlatforms()) {
 				platform.Draw();
+			}
+			//Draw mobs
+			for (Mob mob : level.getMobs()) {
+				mob.update();
 			}
 			// Draw Goal
 			level.getGP().Draw();
